@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 
-def generate_csv_report(report, vpn_name="Enova VPN", protocol):
+def generate_csv_report(report, vpn_name="Enova VPN", protocol='') :
     # Current date and time
     now = datetime.now()
     date_str = now.strftime("%Y-%m-%d %I:%M %p")  # Full date & 12-hour time

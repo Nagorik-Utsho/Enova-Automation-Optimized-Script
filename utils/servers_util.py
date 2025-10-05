@@ -6,14 +6,17 @@ from utils.necessary_adb_commands import *
 from utils.server_status import  *
 from utils.thrid_party_apps import *
 from utils.necessary_popups import *
+from utils.vpn_features import *
+from .necessary_generic_utils import *
 import random
+from .navigation import *
 
-
+'''Verify All the servers status for the WireGuard Protocol'''
 
 def check_wireguard_protocol_servers_status(driver,server):
 
     #1.Open the server list
-    serverlist(driver)
+    server_list(driver)
 
     #2.Open the Drop_downs
     print(" Countries name ")
@@ -45,7 +48,7 @@ def check_wireguard_protocol_servers_status(driver,server):
 
 
 
-
+'''Verify the server switching functionality for the WireGuard Protocol'''
 
 def check_wireguard_protocol_server_switch(driver, server1, server2):
     """Check VPN server switching functionality and return a clean report"""
@@ -58,7 +61,7 @@ def check_wireguard_protocol_server_switch(driver, server1, server2):
     print("Checking the server switching functionality for the WireGuard Protocol")
 
     # 1. Open the server list
-    res = serverlist(driver)
+    res = server_list(driver)
     if res["status"] == "FAILED":
         return {"status": "FAILED", "message": "Failed to open server list", "details": res}
 
@@ -85,7 +88,7 @@ def check_wireguard_protocol_server_switch(driver, server1, server2):
     report["server1"]["youtube_test"] = yt_res
 
     # 7. Open server list again
-    res = serverlist(driver)
+    res = server_list(driver)
     if res["status"] == "FAILED":
         return {"status": "FAILED", "message": "Failed to open server list for server2", "details": res}
 
@@ -119,6 +122,29 @@ def check_wireguard_protocol_server_switch(driver, server1, server2):
 
     return {"status": "SUCCESS", "report": report}
 
+'''Verify the functionality of the kill switch feature in WireGuard Protocol'''
+def wireguard_kill_switch(driver):
+
+
+    # #3.Click on the Internet Kill switch
+    turn_on_kill_switch(driver)
+
+    #4.Restart the application
+    open_enova(driver)
+    #1.Connect with server
+    connect_server(driver)
+    #5.Disconnect server
+    disconnect_server(driver)
+    #6.Check the traffic through adb
+    test_kill_switch(driver)
+
+    #7.Turn of the kill switch
+    turn_off_kill_switch(driver)
+
+
+
+
+
 
 def wireguard_servers(driver):
   # Selecting the server name
@@ -132,12 +158,14 @@ def wireguard_servers(driver):
     #       check_wireguard_protocol_servers_status(driver,server)
 
 
-    result = check_wireguard_protocol_server_switch(driver, 'India - 3', 'Netherlands - 3')
+    # result = check_wireguard_protocol_server_switch(driver, 'India - 3', 'Netherlands - 3')
+    #
+    # assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
+    # print("Server switch test completed successfully")
+    # print(result["report"])
+    # generate_csv_report(result["report"],"","WireGuard")
 
-    assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
-    print("Server switch test completed successfully")
-    print(result["report"])
-    generate_csv_report(result["report"],"","WireGuard")
+    wireguard_kill_switch(driver)
 
 
 

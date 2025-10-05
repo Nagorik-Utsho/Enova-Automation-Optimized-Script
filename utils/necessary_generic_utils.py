@@ -1,4 +1,4 @@
-from .necessary_packages import WebDriverWait, EC, AppiumBy, TimeoutException, NoSuchElementException, StaleElementReferenceException, time, wraps
+from .necessary_packages import *
 
 def retry(max_attempts=3, delay=2, exceptions=(Exception,)):
     """Retry decorator for flaky UI actions."""
@@ -57,3 +57,22 @@ def scroll_and_click_in_scrollview(driver, element_text, max_scrolls_per_directi
 
     print(f"❌ Element '{element_text}' not found.")
     return {"status": "FAILED", "message": f"Element '{element_text}' not found after scrolling"}
+
+
+
+def server_list(driver):
+    """Go to the Server list to check all the servers"""
+    try:
+        wait = WebDriverWait(driver, 60)
+        server = wait.until(
+            EC.presence_of_element_located((By.XPATH, '//android.view.View[contains(@content-desc, "Auto")]'))
+        )
+        server.click()
+        time.sleep(2)
+        return {"status": "SUCCESS", "message": "Server list opened successfully"}
+    except Exception as e:
+        return {"status": "FAILED", "message": f"Server list not found: {e}"}
+
+
+
+

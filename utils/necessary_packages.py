@@ -6,6 +6,7 @@ from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from appium.webdriver.common.appiumby import AppiumBy
 from functools import wraps
+import subprocess
 
 import time
 import re
