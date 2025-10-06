@@ -206,28 +206,45 @@ def wireguard_kill_switch(driver, server1):
 
 
 def wireguard_servers(driver):
-  # Selecting the server name
-    #servers=["India - 3"]
-    servers = [ "India - 3", "Netherlands - 1",
-                "Netherlands - 3", "Brazil",
-                    "Singapore - 1", "Germany - 1", "Germany - 6",
-                   "Germany Warrior", "Canada", "Poland"]
+    # Selecting the server name
+    # servers=["India - 3"]
+    servers = ["India - 3", "Netherlands - 1",
+               "Netherlands - 3", "Brazil",
+               "Singapore - 1", "Germany - 1", "Germany - 6",
+               "Germany Warrior", "Canada", "Poland"]
+    # 1️⃣ Run server switch test
+    server_switch_result = check_wireguard_protocol_server_switch(driver, 'India - 3', 'Netherlands - 3')
+    assert server_switch_result["status"] == "SUCCESS", f"Server switch failed: {server_switch_result}"
 
-    # for server in servers :
-    #       check_wireguard_protocol_servers_status(driver,server)
+    # 2️⃣ Run kill switch test
+    kill_switch_result = wireguard_kill_switch(driver, "Singapore - 1")
+    assert kill_switch_result["status"] == "SUCCESS", f"Kill switch test failed: {kill_switch_result}"
 
+    # 3️⃣ Combine both reports
+    combined_report = {
+        "Server Switch": server_switch_result.get("report", {}),
+        "Kill Switch": kill_switch_result.get("report", {})
+    }
 
+    # 4️⃣ Generate CSV with combined report
+    generate_csv_report(combined_report, vpn_name="Enova VPN", protocol="WireGuard",
+                        test_type="Server Switch + Kill Switch")
+
+    # # for server in servers :
+    # #       check_wireguard_protocol_servers_status(driver,server)
+    #
+    #
     # result = check_wireguard_protocol_server_switch(driver, 'India - 3', 'Netherlands - 3')
     #
     # assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
     # print("Server switch test completed successfully")
     # print(result["report"])
-    # generate_csv_report(result["report"],"","WireGuard")
-
-
-    result = wireguard_kill_switch(driver, "Singapore - 1")
-    assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
-    generate_csv_report(result["report"], vpn_name="Enova VPN", protocol="WireGuard")
+    # generate_csv_report(result["report"],"Enova","WireGuard","Server Switch")
+    #
+    #
+    # result = wireguard_kill_switch(driver, "Singapore - 1")
+    # assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
+    # generate_csv_report(result["report"], vpn_name="Enova VPN", protocol="WireGuard","Kill Switch Functionality")
 
 
 

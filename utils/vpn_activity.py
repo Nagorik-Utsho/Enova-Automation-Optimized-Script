@@ -29,7 +29,7 @@ def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
         print("Trying to Disconnect the vpn")
-        wait = WebDriverWait(driver, 30)
+        wait = WebDriverWait(driver, 120)
         turn_on_button = wait.until(EC.presence_of_element_located((
             By.XPATH, '//android.view.View[contains(@content-desc, "Connected")]/android.widget.ImageView[3]'
         )))
@@ -84,14 +84,14 @@ def turn_on_kill_switch(driver):
 
 '''Go back to Home screen after turning on the Kill switch'''
 
-# def navigate_back_home_page(driver):
-#     print("Navigating back to home page ")
-#     wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
-#     wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
-#     wait_and_click(driver,'//android.widget.ImageView')
-#     wait_and_click(driver,'//android.widget.ImageView[@content-desc="VPN Settings"]')
-#     wait_and_click(driver,'')
-#     wait_and_click(driver,'')
+def turn_on_split_tunneling(driver):
+    print("Turning on the Split tunneling")
+    wait_and_click(driver,'//android.view.View[contains(@content-desc,"Split tunneling")]')
+    wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
+    wait_and_click(driver,'//android.widget.ImageView')
+    wait_and_click(driver,'//android.widget.ImageView[@content-desc="VPN Settings"]')
+    wait_and_click(driver,'')
+    wait_and_click(driver,'')
 
 
 
