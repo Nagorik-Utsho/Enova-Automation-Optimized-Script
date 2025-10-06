@@ -29,7 +29,7 @@ def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
         print("Trying to Disconnect the vpn")
-        wait = WebDriverWait(driver, 5)
+        wait = WebDriverWait(driver, 30)
         turn_on_button = wait.until(EC.presence_of_element_located((
             By.XPATH, '//android.view.View[contains(@content-desc, "Connected")]/android.widget.ImageView[3]'
         )))

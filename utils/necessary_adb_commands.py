@@ -2,6 +2,7 @@ from .necessary_packages import *
 
 def open_enova(driver):
     """Reopen Enova VPN main activity"""
+    print("Reopening the VPN application ")
     try:
         driver.execute_script("mobile: shell", {
             "command": "am start -n com.enovavpn.mobile/com.enovavpn.mobile.MainActivity"
@@ -57,29 +58,34 @@ def go_home(driver):
 
 
 def is_internet_reachable(driver):
-        print("Checking the internet reachability")
-        """
-        Returns True if ping succeeds, False if it fails.
-        """
-        try:
-            # Run adb shell ping command
-            result = subprocess.run(
-                ['adb', 'shell', 'ping', '-c', '1', '-W', '10', '8.8.8.8'],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
+    """
+    Checks if the internet is reachable to validate Kill Switch functionality.
+    Returns a dictionary with 'status' and 'message'.
+    """
+    print("Checking the internet reachability for Kill Switch...")
+    try:
+        # Run adb ping command
+        result = subprocess.run(
+            ['adb', 'shell', 'ping', '-c', '1', '-W', '10', '8.8.8.8'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
 
-            output = result.stdout.lower()
+        output = result.stdout.lower()
 
-            # Check if ping failed (no reply)
-            if "64 bytes from" in output:
-                print("Internet is reachable")
-                return {"status": "FAILED", "message": "Kill switch is not functional"}
-            else:
-                print("internet is not reachable")
-                return {"status": "Passed", "message": "Kill switch is functional"}  # Internet blocked
-        except Exception as e:
-            print("Error running adb ping:", e)
-            return False
+        # If ping succeeds, internet is reachable → Kill switch FAILED
+        if "64 bytes from" in output:
+            print("Internet is reachable → Kill Switch FAILED")
+            return {"status": "FAILED", "message": "Kill switch is not functional: internet reachable"}
+
+        # If ping fails, internet is blocked → Kill switch SUCCESS
+        print("Internet is not reachable → Kill Switch SUCCESS")
+        return {"status": "SUCCESS", "message": "Kill switch is functional: internet blocked"}
+
+    except Exception as e:
+        # Any exception is treated as failure
+        print(f"Error running adb ping: {e}")
+        return {"status": "FAILED", "message": f"Kill switch test failed: {e}"}
+
 
