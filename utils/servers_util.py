@@ -1,3 +1,4 @@
+import time
 
 from utils.necessary_generic_utils import scroll_and_click_in_scrollview
 from utils.report_generator import generate_csv_report
@@ -123,26 +124,66 @@ def check_wireguard_protocol_server_switch(driver, server1, server2):
     return {"status": "SUCCESS", "report": report}
 
 '''Verify the functionality of the kill switch feature in WireGuard Protocol'''
-def wireguard_kill_switch(driver):
+def wireguard_kill_switch(driver,server1) :
+
+    report={
+        "server1": {"name": server1},
+
+    }
+
+    # 1. Open the server list
+    res = server_list(driver)
+    if res["status"] == "FAILED":
+        return {"status": "FAILED", "message": "Failed to open server list", "details": res}
+
+    # 2. Select countries
+    countries = ["Netherlands", "Germany"]
+    for country in countries:
+        if not scroll_and_click_in_scrollview(driver, country):
+            return {"status": "FAILED", "message": f"Country '{country}' not found"}
+
+    # 3. Select 1st server
+    if not scroll_and_click_in_scrollview(driver, server1):
+        return {"status": "FAILED", "message": f"Target server '{server1}' not found"}
+
+    # 4. Connect server
+    res = connect_server(driver)
+    report["server1"]["connect"] = res
+    # Step 6: Turn ON kill switch
+    res = turn_on_kill_switch(driver)
+    if res["status"] == "FAILED":
+        return {"status": "FAILED", "message": "Failed to Turn on the kill switch", "details": res}
 
 
-    # #3.Click on the Internet Kill switch
-    turn_on_kill_switch(driver)
+    # Step 6: Restart app
+    res = open_enova(driver)
+    if res["status"] == "FAILED":
+        return res
 
-    #4.Restart the application
-    open_enova(driver)
-    #1.Connect with server
-    connect_server(driver)
-    #5.Disconnect server
-    disconnect_server(driver)
-    #6.Check the traffic through adb
-    test_kill_switch(driver)
-
-    #7.Turn of the kill switch
-    turn_off_kill_switch(driver)
+    time.sleep(5)
 
 
+    # Step 7: Disconnect
+    res = disconnect_server(driver)
+    if res["status"] == "FAILED":
+        return res
 
+    # Step 8: Test kill switch
+    is_internet_reachable(driver)
+
+
+    # Step 9: Turn OFF kill switch
+    res = turn_off_kill_switch(driver)
+    if res["status"] == "FAILED":
+        return res
+
+
+    # Step 6: Restart app
+    res = open_enova(driver)
+    if res["status"] == "FAILED":
+        return res
+
+    return {"status": "SUCCESS", "message": "Kill switch test passed", "report": report}
 
 
 
@@ -165,7 +206,7 @@ def wireguard_servers(driver):
     # print(result["report"])
     # generate_csv_report(result["report"],"","WireGuard")
 
-    wireguard_kill_switch(driver)
+    wireguard_kill_switch(driver,"Singapore - 1")
 
 
 

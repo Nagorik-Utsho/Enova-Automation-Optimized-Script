@@ -28,4 +28,5 @@ def vpn_settings_options(driver):
         return {"status": "Failed ", "message": "Failed to click on the VPN settings option"}
 
 
-''''''
+'''going back to the Home page'''
+

@@ -28,6 +28,7 @@ def connect_server(driver):
 def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
+        print("Trying to Disconnect the vpn")
         wait = WebDriverWait(driver, 5)
         turn_on_button = wait.until(EC.presence_of_element_located((
             By.XPATH, '//android.view.View[contains(@content-desc, "Connected")]/android.widget.ImageView[3]'
@@ -80,6 +81,20 @@ def turn_on_kill_switch(driver):
     except Exception as e:
         print(e)
         return {"status": "FAILED", "message": "Failed to turn on the kill switch"}
+
+'''Go back to Home screen after turning on the Kill switch'''
+
+# def navigate_back_home_page(driver):
+#     print("Navigating back to home page ")
+#     wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
+#     wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
+#     wait_and_click(driver,'//android.widget.ImageView')
+#     wait_and_click(driver,'//android.widget.ImageView[@content-desc="VPN Settings"]')
+#     wait_and_click(driver,'')
+#     wait_and_click(driver,'')
+
+
+
 
 
 
