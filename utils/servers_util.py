@@ -228,7 +228,7 @@ def wireguard_servers(driver):
 
     # 4️⃣ Generate CSV with combined report
     generate_csv_report(combined_report, vpn_name="Enova VPN", protocol="WireGuard",
-                        test_type="Server Switch + Kill Switch")
+                        test_type= "Kill Switch")
 
     # # for server in servers :
     # #       check_wireguard_protocol_servers_status(driver,server)

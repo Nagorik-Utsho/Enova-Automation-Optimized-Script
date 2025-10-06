@@ -80,40 +80,40 @@ def get_ip_from_app(driver):
 def get_nord_ip(driver, retries=6, wait_sec=3):
     """
     Open Chrome, load NordVPN IP page, and extract the IP address.
-    Prints the IP directly.
+    Returns a dict compatible with report generation:
+    {"status": "Passed"/"Failed", "message": "...", "ip": "..."}
     """
+    import subprocess, time, re
+    from selenium.webdriver.common.by import By
+
     ADB = "adb"
     NORD_MY_IP_URL = "https://nordvpn.com/what-is-my-ip/?srsltid=AfmBOorItZfdwTjFuAZ8M0vvMtKxbehPUSmMlYLUZ79PgYfaAkaDAImP"
-    # Utility: run adb command
+
     def run(cmd, timeout=30):
         proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
         return proc.returncode, proc.stdout, proc.stderr
 
-    # Open Chrome with the URL
+    # Open Chrome
     cmd = [ADB, "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", NORD_MY_IP_URL]
     rc, out, err = run(cmd)
     if rc != 0:
-        print("Failed to open Chrome:", err)
-        return None
+        return {"status": "Failed", "message": f"Failed to open Chrome: {err}", "ip": None}
 
-    time.sleep(3)  # Give Chrome a moment to start
+    time.sleep(3)  # Wait for Chrome to start
 
-    # Attempt to extract IP
+    # Try extracting IP multiple times
     for attempt in range(retries):
         try:
             elements = driver.find_elements(By.XPATH, '//android.widget.TextView')
             for el in elements:
                 text = el.get_attribute('text')
                 if text:
-                    ipv4_re = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
-                    m = ipv4_re.search(text)
+                    m = re.search(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text)
                     if m:
-                        print(m.group(0))  # Print the IP
-                        return m.group(0)
-        except:
-            pass  # Suppress errors like stale elements
+                        ip = m.group(0)
+                        return {"status": "Passed", "message": f"Detected IP: {ip}", "ip": ip}
+        except Exception as e:
+            pass
+        time.sleep(wait_sec)
 
-        time.sleep(wait_sec)  # Wait before next attempt
-
-    print("Failed to detect IP from NordVPN page")
-    return None
+    return {"status": "Failed", "message": "Failed to detect IP from NordVPN page", "ip": None}
