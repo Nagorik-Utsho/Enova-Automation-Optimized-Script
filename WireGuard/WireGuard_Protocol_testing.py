@@ -1,7 +1,7 @@
-from enova_features.connection_disconnection import connection_disconnection_execution
-from enova_features.kill_switch import kill_switch_execution
-from enova_features.server_switch import server_switch_execution
-from utils.driver_setup import setup_driver
+from enova_features.connection_disconnection import *
+from enova_features.kill_switch import *
+from enova_features.server_switch import *
+from utils.driver_setup import *
 from utils.servers_util import *
 
 

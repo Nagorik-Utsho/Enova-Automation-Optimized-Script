@@ -29,4 +29,5 @@ def vpn_settings_options(driver):
 
 
 '''going back to the Home page'''
-
+def going_back_to_homepage(driver):
+    

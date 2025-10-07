@@ -24,7 +24,7 @@ def connect_server(driver):
         print("Failed to connect with the server")
         return {"status": "FAILED", "message": f"Failed to connect to server: {e}"}
 
-@retry()
+@retry(max_attempts=3, delay=2)
 def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
@@ -77,6 +77,14 @@ def turn_on_kill_switch(driver):
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[1]')
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[2]')
         wait_and_click(driver, '//android.widget.Button[@resource-id="android:id/button1"]')
+
+        # NEW: Navigate back to app (press back 2-3 times to exit settings fully)
+        for _ in range(3):
+            driver.back()
+            time.sleep(1)  # Brief pause between backs to let transitions settle
+
+        # Optional: Verify we're back in app (log current activity for debugging)
+        print(f"Current activity after back nav: {driver.current_activity}")
         return {"status": "SUCCESS", "message": "Kill switch turned on successfully"}
     except Exception as e:
         print(e)
@@ -108,6 +116,13 @@ def turn_off_kill_switch(driver):
         wait_and_click(driver, '//android.view.View[@content-desc="OPEN SETTINGS"]')
         wait_and_click(driver, '//android.widget.ImageView[@content-desc="Settings"]')
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[1]')
+        # NEW: Navigate back to app (press back 2-3 times to exit settings fully)
+        for _ in range(3):
+            driver.back()
+            time.sleep(1)  # Brief pause between backs to let transitions settle
+
+        # Optional: Verify we're back in app (log current activity for debugging)
+        print(f"Current activity after back nav: {driver.current_activity}")
         return {"status": "SUCCESS", "message": "Kill switch turned off  successfully"}
 
     except Exception as e:

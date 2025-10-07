@@ -1,10 +1,11 @@
 from utils.necessary_generic_utils import *
+from utils.report_generator import *
 from utils.server_status import *
 from utils.thrid_party_apps import *
 from utils.vpn_activity import *
 
 
-def split_tunneling_test_executing(driver, server):
+def split_tunneling_test_execution_steps(driver, server):
     """
     Executes WireGuard Split Tunneling test and generates a CSV report with step-wise validation.
     """
@@ -64,3 +65,29 @@ def split_tunneling_test_executing(driver, server):
             "status": "FAILED",
             "message": f"IP validation failed: {e}"
         }
+    return report
+
+def split_tunneling_execution(driver,server,protocol_name):
+    """
+    Executes server switch test and writes the results to CSV.
+    """
+    # Run server switch test
+    result = split_tunneling_test_execution_steps(driver, server)
+
+    # Ensure test passed
+    assert result["status"] == "SUCCESS", f"Server switch failed: {result}"
+
+    # Print results for logs
+    print("✅ Server switch test completed successfully")
+    print(result["report"])
+
+    # Generate CSV report using the returned report
+    generate_csv_report(
+        result["report"],
+        vpn_name="Enova",
+        protocol=protocol_name,
+        test_name="Split Tunneling Test"
+    )
+
+    print("✅ Server Switch CSV report generated.")
+

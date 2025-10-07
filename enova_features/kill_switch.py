@@ -49,6 +49,8 @@ def kill_switch_execution_steps(driver, server1):
     if res["status"] == "FAILED":
         return {"status": "FAILED", "message": "Failed to turn ON kill switch", "report": report}
 
+    #Force Stop enova
+    force_stop_enova(driver)
     # 6. Restart app
     res = open_enova(driver)
     report["server1"]["restart_app_after_kill_switch"] = res

@@ -4,7 +4,7 @@ from utils.server_status import server_status_check
 from utils.vpn_activity import connect_server, disconnect_server
 from utils.report_generator import generate_csv_report
 
-def connection_disconnection_execution(driver, server_name):
+def connection_disconnection_execution_steps(driver, server_name):
     """
     Executes server connection, optimization check, and disconnection steps.
     Logs each step in CSV-ready report.
@@ -97,5 +97,25 @@ def connection_disconnection_execution(driver, server_name):
 
 
 
+def server_connect_disconnect_execution(driver , server,protocol_name):
 
+    # Run server switch test
+    result = connection_disconnection_execution_steps(driver, server,protocol_name)
+
+    # Ensure test passed
+    assert result["status"] == "SUCCESS", f"Connection  &  Disconnection failed: {result}"
+
+    # Print results for logs
+    print("✅ Connection & Disconnection  test completed successfully")
+    print(result["report"])
+
+    # Generate CSV report using the returned report
+    generate_csv_report(
+        result["report"],
+        vpn_name="Enova",
+        protocol=protocol_name,
+        test_name="Connection & Disconnection"
+    )
+
+    print("✅ Server Switch CSV report generated.")
 
