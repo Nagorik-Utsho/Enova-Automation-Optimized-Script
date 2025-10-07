@@ -7,7 +7,6 @@ from utils.necessary_adb_commands import *
 from utils.server_status import  *
 from utils.thrid_party_apps import *
 from utils.necessary_popups import *
-from utils.vpn_features import *
 from .necessary_generic_utils import *
 import random
 from .navigation import *
