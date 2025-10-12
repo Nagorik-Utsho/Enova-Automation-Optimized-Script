@@ -22,6 +22,7 @@ def scroll_and_click_in_scrollview(driver, element_text, max_scrolls_per_directi
     Scroll in a ScrollView and click the element if found.
     Returns a dict with status and message.
     """
+    print("Seraching for the server")
     scrollview_xpath = '//android.widget.FrameLayout[@resource-id="android:id/content"]//android.view.View[5]//android.view.View'
 
     try:

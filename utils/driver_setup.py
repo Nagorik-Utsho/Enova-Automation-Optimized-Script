@@ -46,6 +46,6 @@ def setup_driver():
     driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", options=options)
     print("Driver setup successful for device:", driver.capabilities['deviceName'])
 
-    return driver
+    return driver , device_udid
 
 

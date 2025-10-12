@@ -24,11 +24,12 @@ def connect_server(driver):
         print("Failed to connect with the server")
         return {"status": "FAILED", "message": f"Failed to connect to server: {e}"}
 
-@retry()
+@retry(max_attempts=3, delay=2)
 def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
-        wait = WebDriverWait(driver, 5)
+        print("Trying to Disconnect the vpn")
+        wait = WebDriverWait(driver, 120)
         turn_on_button = wait.until(EC.presence_of_element_located((
             By.XPATH, '//android.view.View[contains(@content-desc, "Connected")]/android.widget.ImageView[3]'
         )))
@@ -76,10 +77,32 @@ def turn_on_kill_switch(driver):
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[1]')
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[2]')
         wait_and_click(driver, '//android.widget.Button[@resource-id="android:id/button1"]')
+
+        # NEW: Navigate back to app (press back 2-3 times to exit settings fully)
+        for _ in range(3):
+            driver.back()
+            time.sleep(1)  # Brief pause between backs to let transitions settle
+
+        # Optional: Verify we're back in app (log current activity for debugging)
+        print(f"Current activity after back nav: {driver.current_activity}")
         return {"status": "SUCCESS", "message": "Kill switch turned on successfully"}
     except Exception as e:
         print(e)
         return {"status": "FAILED", "message": "Failed to turn on the kill switch"}
+
+'''Go back to Home screen after turning on the Kill switch'''
+
+def turn_on_split_tunneling(driver):
+    print("Turning on the Split tunneling")
+    wait_and_click(driver,'//android.view.View[contains(@content-desc,"Split tunneling")]')
+    wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
+    wait_and_click(driver,'//android.widget.ImageView')
+    wait_and_click(driver,'//android.widget.ImageView[@content-desc="VPN Settings"]')
+    wait_and_click(driver,'')
+    wait_and_click(driver,'')
+
+
+
 
 
 
@@ -93,6 +116,13 @@ def turn_off_kill_switch(driver):
         wait_and_click(driver, '//android.view.View[@content-desc="OPEN SETTINGS"]')
         wait_and_click(driver, '//android.widget.ImageView[@content-desc="Settings"]')
         wait_and_click(driver, '(//android.widget.Switch[@resource-id="android:id/switch_widget"])[1]')
+        # NEW: Navigate back to app (press back 2-3 times to exit settings fully)
+        for _ in range(3):
+            driver.back()
+            time.sleep(1)  # Brief pause between backs to let transitions settle
+
+        # Optional: Verify we're back in app (log current activity for debugging)
+        print(f"Current activity after back nav: {driver.current_activity}")
         return {"status": "SUCCESS", "message": "Kill switch turned off  successfully"}
 
     except Exception as e:

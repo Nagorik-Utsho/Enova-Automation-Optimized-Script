@@ -1,6 +1,8 @@
+from .necessary_adb_commands import tapping_vpn_settings
 from .necessary_packages import *
 from .helpers import *
-
+from .driver_setup import *
+device_udid=setup_driver()
 
 '''Settings Option'''
 def vpn_settings_menu(driver):
@@ -28,4 +30,11 @@ def vpn_settings_options(driver):
         return {"status": "Failed ", "message": "Failed to click on the VPN settings option"}
 
 
-''''''
+'''going back to the Home page'''
+def go_back_to_homepage(driver):
+
+   tapping_vpn_settings(device_udid)
+
+   #Go to the home page
+   wait_and_click(driver,'//android.widget.Button[contains(@content-desc,"Home")]')
+
