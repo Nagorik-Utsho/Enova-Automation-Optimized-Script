@@ -1,29 +1,29 @@
 from .necessary_packages import *
 
-def retry(max_attempts=3, delay=2, exceptions=(Exception,)):
-    """Retry decorator for flaky UI actions."""
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            for attempt in range(1, max_attempts + 1):
-                try:
-                    return func(*args, **kwargs)
-                except exceptions as e:
-                    print(f"⚠️ Attempt {attempt}/{max_attempts} failed for {func.__name__}: {e}")
-                    time.sleep(delay)
-            print(f"❌ All {max_attempts} attempts failed for {func.__name__}")
-            return {"status": "FAILED", "message": f"{func.__name__} failed after {max_attempts} attempts"}
-        return wrapper
-    return decorator
+# def retry(max_attempts=3, delay=2, exceptions=(Exception,)):
+#     """Retry decorator for flaky UI actions."""
+#     def decorator(func):
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             for attempt in range(1, max_attempts + 1):
+#                 try:
+#                     return func(*args, **kwargs)
+#                 except exceptions as e:
+#                     print(f"⚠️ Attempt {attempt}/{max_attempts} failed for {func.__name__}: {e}")
+#                     time.sleep(delay)
+#             print(f"❌ All {max_attempts} attempts failed for {func.__name__}")
+#             return {"status": "FAILED", "message": f"{func.__name__} failed after {max_attempts} attempts"}
+#         return wrapper
+#     return decorator
 
-@retry(max_attempts=3, delay=2)
+# @retry(max_attempts=3, delay=2)
 def scroll_and_click_in_scrollview(driver, element_text, max_scrolls_per_direction=5, max_cycles=5):
     """
     Scroll in a ScrollView and click the element if found.
     Returns a dict with status and message.
     """
     print("Seraching for the server")
-    scrollview_xpath = '//android.widget.FrameLayout[@resource-id="android:id/content"]//android.view.View[5]//android.view.View'
+    scrollview_xpath = '//android.widget.FrameLayout[@resource-id="android:id/content"]/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[5]/android.view.View/android.view.View/android.view.View'
 
     try:
         wait = WebDriverWait(driver, 60)
@@ -63,8 +63,10 @@ def scroll_and_click_in_scrollview(driver, element_text, max_scrolls_per_directi
 
 def server_list(driver):
     """Go to the Server list to check all the servers"""
+    print ("Now in the server list")
+
     try:
-        wait = WebDriverWait(driver, 60)
+        wait = WebDriverWait(driver, 120)
         server = wait.until(
             EC.presence_of_element_located((By.XPATH, '//android.view.View[contains(@content-desc, "Auto")]'))
         )

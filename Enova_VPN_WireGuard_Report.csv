@@ -1,0 +1,10 @@
+VPN Name: Enova VPN,Test Name: Kill Switch Test,Protocol: WireGuard,Report Generated: 2025-10-13 02:40 PM
+
+Server,Step,Status,Symbol,Message
+Japan,open_server_list,SUCCESS,✅,Server list opened successfully
+Japan,select_server,SUCCESS,✅,Server 'Japan' selected
+Japan,connect_server,SUCCESS,✅,Server connected successfully
+Japan,kill_switch_on,SUCCESS,✅,Kill switch turned on successfully
+Japan,disconnect_server,SUCCESS,✅,Server disconnected successfully
+Japan,kill_switch_test,SUCCESS,✅,Kill switch is functional: internet blocked
+Japan,kill_switch_off,SUCCESS,✅,Kill switch turned off  successfully

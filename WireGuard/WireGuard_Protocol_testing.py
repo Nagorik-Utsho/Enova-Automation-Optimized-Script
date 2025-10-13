@@ -6,18 +6,18 @@ from utils.servers_util import *
 
 
 
-
-def wireguard_protocol_servers(driver):
-
-    #Enter the servers name
-    available_countries_name=["Singapore" , "Germany"]
-
-    #Servers name
-    available_servers_name=['India - 3','USA - 1','Netherlands - 1',
-                            'Brazil','Singapore','Singapore - 1',
-                            'Germany - 1','Germany Warrior',
-                            'Japan','Sweden - 3']
-    server_status_check(available_countries_name,available_servers_name)
+#
+# def wireguard_protocol_servers(driver):
+#
+#     #Enter the servers name
+#     available_countries_name=["Singapore" , "Germany"]
+#
+#     #Servers name
+#     available_servers_name=['India - 3','USA - 1','Netherlands - 1',
+#                             'Brazil','Singapore','Singapore - 1',
+#                             'Germany - 1','Germany Warrior',
+#                             'Japan','Sweden - 3']
+#     server_status_check(available_countries_name,available_servers_name)
 
 
 
@@ -27,7 +27,7 @@ def wireguard_protocol_testing(driver):
 
 
    #1.Connect & Disconnect check
-    #connection_disconnection_execution(driver,'Japan')
+   # connection_disconnection_execution_steps(driver,'Japan',"WireGuard")
 
    #2. Server switch
     #server_switch_execution(driver, 'Japan', 'Brazil')

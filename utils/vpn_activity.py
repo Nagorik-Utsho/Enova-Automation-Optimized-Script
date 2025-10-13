@@ -1,5 +1,5 @@
 from .navigation import *
-from .necessary_generic_utils import retry
+#from .necessary_generic_utils import retry
 from .helpers import *
 from .necessary_popups import close_disconnection_report_popup
 
@@ -24,7 +24,7 @@ def connect_server(driver):
         print("Failed to connect with the server")
         return {"status": "FAILED", "message": f"Failed to connect to server: {e}"}
 
-@retry(max_attempts=3, delay=2)
+#@retry(max_attempts=3, delay=2)
 def disconnect_server(driver):
     """Disconnect the VPN server"""
     try:
@@ -45,7 +45,7 @@ def disconnect_server(driver):
         return {"status": "FAILED", "message": f"Failed to disconnect: {e}"}
 
 
-@retry()
+#@retry()
 def server_switch(driver):
     """Switch the VPN server"""
     try:
@@ -98,8 +98,7 @@ def turn_on_split_tunneling(driver):
     wait_and_click(driver,'//android.widget.ImageButton[@content-desc="Navigate up"]')
     wait_and_click(driver,'//android.widget.ImageView')
     wait_and_click(driver,'//android.widget.ImageView[@content-desc="VPN Settings"]')
-    wait_and_click(driver,'')
-    wait_and_click(driver,'')
+
 
 
 

@@ -48,4 +48,4 @@ def server_status_checking_executing(driver):
 
     #Checking the servers
      for server in servers :
-         wireguard_protocol_servers_status_checking_execution_steps(driver,server)
+         servers_status_checking_execution_steps(driver,server)

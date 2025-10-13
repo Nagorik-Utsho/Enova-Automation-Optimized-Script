@@ -3,9 +3,9 @@ from .necessary_popups import close_disconnection_report_popup, successful_serve
 from .necessary_packages import WebDriverWait, EC, By, time, re, TimeoutException
 from .thrid_party_apps import get_ip_from_app
 from .necessary_adb_commands import reopen_enova
-from .necessary_generic_utils import retry
+#from .necessary_generic_utils import retry
 
-@retry(max_attempts=3, delay=2)
+#@retry(max_attempts=3, delay=2)
 def server_status_check(driver):
     """Check if server needs optimization and disconnect if needed"""
     try:
@@ -34,7 +34,7 @@ def server_status_check(driver):
         return {"status": "FAILED", "message": f"Server status check failed: {e}"}
 
 
-@retry(max_attempts=3, delay=2)
+#@retry(max_attempts=3, delay=2)
 def not_optimized_servers(driver):
     """Handle server optimization popup"""
     try:
@@ -62,7 +62,7 @@ def not_optimized_servers(driver):
         return None
 
 
-@retry(max_attempts=3, delay=2)
+#@retry(max_attempts=3, delay=2)
 def in_app_ip(driver):
     """Get connected VPN server and IP"""
     try:
@@ -93,7 +93,7 @@ def in_app_ip(driver):
         return {"status": "FAILED", "message": str(e)}
 
 
-@retry(max_attempts=3, delay=2)
+#@retry(max_attempts=3, delay=2)
 def validate_ip(driver):
     """Validate VPN IP against third-party app"""
     try:

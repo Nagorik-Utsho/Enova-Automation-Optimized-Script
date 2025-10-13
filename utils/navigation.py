@@ -1,9 +1,8 @@
 from .necessary_adb_commands import tapping_vpn_settings
 from .necessary_packages import *
 from .helpers import *
-from .driver_setup import *
-device_udid=setup_driver()
-
+from  utils.driver_setup import *
+device_udid,android_version=get_connected_device_info()
 '''Settings Option'''
 def vpn_settings_menu(driver):
     """ Go for the VPN Setting option """
