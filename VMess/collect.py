@@ -4,6 +4,7 @@ from utils.driver_setup import *
 from utils.helpers import wait_and_click
 from utils.locators import *
 from utils.necessary_generic_utils import *
+from utils.report_generator import save_to_csv
 
 countries = set()
 servers = set()
@@ -24,8 +25,7 @@ def go_to_premium_tab(driver):
 
     countries.remove("Brazil")
     servers.add("Brazil")
-    print(countries)
-    print(servers)
+    print(f"Collected countries name :{countries}")
 
     for country in countries :
         #xpath = CountryDropdown.close_dropdown(country)
@@ -62,6 +62,7 @@ def main():
     server_list(driver)
     time.sleep(3)
     go_to_premium_tab(driver)
+    save_to_csv(countries, servers, "collected_countries_servers.csv")
 
 
 if __name__ == "__main__":

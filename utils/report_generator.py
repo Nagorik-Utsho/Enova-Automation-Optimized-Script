@@ -53,3 +53,37 @@ def generate_csv_report(report, vpn_name='', protocol='', test_name=''):
                 writer.writerow([server, step, status, symbol, message])
 
     print(f"✅ Report generated/updated: {filename}")
+
+
+
+
+import csv
+
+def save_to_csv(countries, servers, filename="countries_servers.csv"):
+    """
+    Save countries and servers to a CSV file with two columns:
+    'Country' and 'Server'.
+    """
+    # Convert sets to sorted lists (optional, for readability)
+    country_list = sorted(list(countries))
+    server_list = sorted(list(servers))
+
+    # Get the maximum length of the lists
+    max_len = max(len(country_list), len(server_list))
+
+    # Pad the shorter list with empty strings so both columns align
+    if len(country_list) < max_len:
+        country_list += [""] * (max_len - len(country_list))
+    if len(server_list) < max_len:
+        server_list += [""] * (max_len - len(server_list))
+
+    # Write to CSV
+    with open(filename, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        # Write header
+        writer.writerow(["Country", "Server"])
+        # Write rows
+        for c, s in zip(country_list, server_list):
+            writer.writerow([c, s])
+
+    print(f"✅ CSV saved successfully as '{filename}'")

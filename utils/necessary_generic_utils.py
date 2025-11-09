@@ -271,7 +271,7 @@ def scroll_and_collect_all_servers(driver,max_scrolls_per_direction=2, max_cycle
                     driver.execute_script("mobile: scrollGesture", {
                         "elementId": scrollable.id,
                         "direction": direction,
-                        "percent": 0.5,
+                        "percent": 0.6,
                         "duration":1000
                     })
                     #time.sleep(0.5)
