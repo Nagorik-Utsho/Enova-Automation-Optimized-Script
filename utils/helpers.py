@@ -7,3 +7,6 @@ def wait_and_click(driver, xpath, timeout=60):
     element = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     element.click()
     time.sleep(.3)
+
+
+

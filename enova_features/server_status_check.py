@@ -4,13 +4,12 @@ from utils.necessary_generic_utils import *
 from utils.server_status import *
 from utils.vpn_activity import *
 from utils.driver_setup import *
-driver=setup_driver()
 
-countries,servers = wireguard_protocol_servers(driver)
 
-def servers_status_checking_execution_steps(driver,server):
-    # Get the countries and servers
-    countries= wireguard_protocol_servers(driver)
+
+
+def servers_status_checking_execution_steps(driver,server,countries,protocol_name):
+    
 
     #1.Open the server list
     server_list(driver)
@@ -44,8 +43,8 @@ def servers_status_checking_execution_steps(driver,server):
     close_disconnection_report_popup(driver)
 
 
-def server_status_checking_executing(driver):
+def server_status_checking_executing(driver,servers,countries,protocol_name):
 
     #Checking the servers
      for server in servers :
-         servers_status_checking_execution_steps(driver,server)
+         servers_status_checking_execution_steps(driver,server,countries,protocol_name)

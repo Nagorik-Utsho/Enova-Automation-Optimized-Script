@@ -4,7 +4,7 @@ from utils.server_status import server_status_check
 from utils.vpn_activity import connect_server, disconnect_server
 from utils.report_generator import generate_csv_report
 
-def connection_disconnection_execution_steps(driver, server_name,protocol):
+def connection_disconnection_execution_steps(driver, server_name):
     """
     Executes server connection, optimization check, and disconnection steps.
     Logs each step in CSV-ready report.
