@@ -1,158 +1,20 @@
 import re
-from appium.webdriver.common.appiumby import AppiumBy
-from selenium.common import TimeoutException, NoSuchElementException, StaleElementReferenceException
+from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from appium import webdriver
-from appium.options.android import UiAutomator2Options
-def setup_driver():
 
-    options = UiAutomator2Options()
-    options.platform_name = "Android"
-    options.platform_version = "15"
-    options.device_name = "R4BW600110K"
-    options.app_package = "com.enovavpn.mobile"
-    options.app_activity = "com.enovavpn.mobile.MainActivity"
-    options.automation_name = "UiAutomator2"
-    options.no_reset = True
-    options.new_command_timeout = 300
-    options.auto_grant_permissions = True
-    options.ensure_webviews_have_pages = True
-    options.dont_stop_app_on_reset = True
-    options.no_reset = True
+from utils.necessary_generic_utils import server_list, scroll_and_click_country, scroll_and_click_server, \
+    scroll_and_collect_all_servers, scroll_and_collect_elements_countries
+from utils.report_generator import load_countries_and_servers, save_to_csv
+from utils.driver_setup import *
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-    driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", options=options)
-    return driver
 
-def scroll_and_click_in_scrollview1(driver, element_text,
-                                       scrollview_xpath="//android.widget.ScrollView",
-                                       max_scrolls_per_direction=10,
-                                       max_cycles=3):
-        """
-        Improved scroll and click mechanism for ScrollView-based layouts.
-        Fixes issues where elements are skipped or not clickable
-        due to rendering lag or blind scrolling.
 
-        Strategy:
-            - Alternate between downward and upward scrolling.
-            - After each scroll, re-check for element multiple times.
-            - Auto-stop once found.
-        """
 
-        wait = WebDriverWait(driver, 5)
-        try:
-            scrollable = wait.until(EC.presence_of_element_located((AppiumBy.XPATH, scrollview_xpath)))
-        except TimeoutException:
-            print("❌ ScrollView container not found.")
-            return False
-
-        directions = ["down", "up"]
-
-        for cycle in range(max_cycles):
-            for direction in directions:
-                for attempt in range(max_scrolls_per_direction):
-                    # Refresh scrollable every time to avoid stale refs
-                    try:
-                        scrollable = driver.find_element(AppiumBy.XPATH, scrollview_xpath)
-                    except StaleElementReferenceException:
-                        print("⚠️ ScrollView went stale, retrying...")
-                        continue
-
-                    # Try to find the target element (with small waits)
-                    for retry in range(3):  # retry visibility check 3x
-                        try:
-                            element = scrollable.find_element(
-                                AppiumBy.XPATH,
-                                f'.//*[contains(@content-desc, "{element_text}")]'
-                            )
-                            # Additional check: ensure element is visible
-                            if element.is_displayed():
-                                element.click()
-                                print(
-                                    f"✅ Found and clicked '{element_text}' (cycle {cycle + 1}, attempt {attempt + 1})")
-                                return True
-                        except NoSuchElementException:
-                            pass
-                        time.sleep(0.5)  # small delay to let UI render
-
-                    # Scroll if not found
-                    try:
-                        driver.execute_script("mobile: scrollGesture", {
-                            "elementId": scrollable.id,
-                            "direction": direction,
-                            "percent": 0.3  # smaller scroll step = less overshoot
-                        })
-                    except Exception as e:
-                        print("⚠️ Scroll gesture failed:", e)
-                        continue
-
-                    time.sleep(0.8)  # small pause after each scroll
-
-        print(f"❌ Element '{element_text}' not found after full scroll in both directions.")
-        return False
-
-    #New scrolling mechanism
-def scroll_and_click_in_scrollview(driver, element_text, max_scrolls_per_direction=4, max_cycles=3):
-    """
-    Generic scroll-and-click for dynamic Android layouts.
-    Automatically detects scrollable containers and scrolls smoothly.
-    """
-
-    print(f"🔍 Searching for element: {element_text}")
-
-    # Wait for at least one scrollable container to appear
-    try:
-        WebDriverWait(driver, 20).until(
-            lambda d: len(d.find_elements(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().scrollable(true)')) > 0
-        )
-    except TimeoutException:
-        return {"status": "FAILED", "message": "No scrollable container found"}
-
-    directions = ["down", "up"]
-
-    for cycle in range(max_cycles):
-        scrollables = driver.find_elements(
-            AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().scrollable(true)'
-        )
-
-        if not scrollables:
-            print("⚠️ No scrollable containers detected.")
-            return {"status": "FAILED", "message": "No scrollables found"}
-
-        # Always target the last (most recent) scrollable container
-        scrollable = scrollables[-1]
-
-        for direction in directions:
-            for attempt in range(max_scrolls_per_direction):
-                try:
-                    # Try finding the element in current view
-                    element = driver.find_element(
-                        AppiumBy.XPATH,
-                        f'//*[contains(@content-desc, "{element_text}")]'
-                    )
-                    element.click()
-                    print(f"✅ Clicked '{element_text}' successfully")
-                    return {"status": "SUCCESS", "message": f"Clicked {element_text}"}
-                except NoSuchElementException:
-                    # Smooth scroll using mobile gesture
-                    try:
-                        driver.execute_script("mobile: scrollGesture", {
-                            "elementId": scrollable.id,
-                            "direction": direction,
-                            "percent": 0.6,
-                            "speed": 600  # smoother, slightly slower scroll
-                        })
-                        time.sleep(0.4)
-                    except Exception as inner_e:
-                        print(f"⚠️ Scroll attempt failed: {inner_e}")
-                except StaleElementReferenceException:
-                    print("♻️ Scrollable element went stale, re-locating...")
-                    break
-
-    print(f"❌ Element '{element_text}' not found after scrolling.")
-    return {"status": "FAILED", "message": f"Element '{element_text}' not found"}
 
 
 
@@ -178,11 +40,7 @@ def homepage_info(driver):
                     ip_address = lines[2].strip()
                     downloaded = lines[4].strip()
                     uploaded = lines[6].strip()
-                    #print(f"Server Name: {server_name}")
-                    #print(f"IP Address: {ip_address}")
-                    #print(f"Downloaded: {downloaded}")
-                    #print(f"Uploaded: {uploaded}")
-                    #print("---")  # Separator for clarity
+
                     break  # Stop after finding the first valid element
 
         # Log the values being returned
@@ -217,53 +75,20 @@ def serverlist(driver):
         print("The server list is not found:", e)
 
 
+
 def connect_disconnect_server(driver, server_name):
-    """ Connect to VPN server and run optimization """
-    driver.execute_script("mobile: shell", {
-        "command": "am start -n com.enovavpn.mobile/com.enovavpn.mobile.MainActivity"
-    })
-    time.sleep(3)
-
-    print(f"\n🚀 Attempting to connect to {server_name}...")
     wait = WebDriverWait(driver, 10)
-    # Open server
-    serverlist(driver)
-
-    countries = ["France"]
-    if "France" in server_name:
-        # Opening the country drop down
-        try:
-            # 🔽 Expand all available countries (first pass)
-
-            for country in countries:
-                # print(f"🔍 Looking for {country}...")
-                if not scroll_and_click_in_scrollview(driver, country):
-                    print(f"❌ Country '{country}' not found in list.")
-                    return
-        except Exception as e:
-            print("ALL the drop_down are opened")
-
-    #Selecting the server name
-    try :
-        # print(f"🔎 Searching for target server: {server_name}...")
-        if not scroll_and_click_in_scrollview(driver, server_name):
-            print(f"❌ Target server '{server_name}' not found, skipping connection.")
-            return
-    except Exception as e :
-        print(f"{server_name} not found")
-
-
     #Connectin with the selected server
-    try :
-        #Connect the server
-        # Click Connect
-        connect_button = wait.until(EC.element_to_be_clickable((
+    try:
+        connect_btn = wait.until(EC.element_to_be_clickable((
             By.XPATH, '//android.view.View[contains(@content-desc, "Disconnected")]/android.widget.ImageView[3]'
         )))
-        connect_button.click()
-        time.sleep(.3)
-    except Exception as e :
-        print ("Failed to connect with the server")
+        connect_btn.click()
+        print("Connect button clicked")
+        time.sleep(3)
+    except Exception as e:
+        print(f"Failed to click Connect button: {e}")
+        return False
 
 
 
@@ -443,15 +268,6 @@ def homepage_info(driver):
                     ip_address = lines[2]
                     downloaded = lines[4]
                     uploaded = lines[6]
-                    #print(f"Server Name: {server_name}")
-                    #print(f"IP Address: {ip_address}")
-                    #print(f"Downloaded: {downloaded}")
-                    #print(f"Uploaded: {uploaded}")
-
-
-
-                    #print("---")  # Separator for multiple entries
-
         return {"Server_name": server_name, "ip_address": ip_address}
     except Exception as e:
         print("Failed to gather information from the home page")
@@ -506,41 +322,90 @@ def close_connection_report_popup(driver,value):
 
 
 def server_check(driver):
-    print("##### Server Status Check #######")
-    servers = ['India - 3','Netherlands - 1','Brazil',
-               "Singapore - 1","Japan",
-               "France - 4","France  Warrior"
-               ,"Germany - 6","USA - 1","Italy - Premium"]
 
 
-    for server in servers:
-        driver.execute_script("mobile: shell", {
-            "command": "am start -n com.enovavpn.mobile/com.enovavpn.mobile.MainActivity"
-        })
-        time.sleep(0.5)
+    # Example usage:
+    countries1, servers1 = load_countries_and_servers("collected_countries_servers.csv")
+    print("✅ Countries:", countries1)
+    print("✅ Servers:", servers1)
+
+    for server in servers1:
+        server_list(driver)
+        matched_country = None
+        server = server.strip()
+        print(f"Checking server: {server}")
+
+        for country in countries1:
+            if server.lower().startswith(country.lower()):
+                matched_country = country
+                break
+
+        if matched_country:
+            print(f"🌍 Server '{server}' belongs to country '{matched_country}'")
+            scroll_and_click_country(driver, matched_country)
+            scroll_and_click_server(driver, server)
+        else:
+            print(f"⚡ Server '{server}' not tied to any country — searching directly")
+            scroll_and_click_server(driver, server)
+
+        # Connect/disconnect each server **inside the loop**
         connect_disconnect_server(driver, server)
-        #print("now go for sleeping mode")
 
 
+
+countries = set()
+servers = set()
+
+def collect_countries_servers(driver):
+
+    result=scroll_and_collect_elements_countries(driver)
+    print(result)
+
+    for item in result['elements']:
+        if '-' in item :
+            servers.add(item)
+        else :
+            countries.add(item)
+
+    countries.remove("Brazil")
+    servers.add("Brazil")
+    print(f"Collected countries name :{countries}")
+
+    for country in countries :
+        #xpath = CountryDropdown.close_dropdown(country)
+        print(f"Trying  to click:{country}")
+        scroll_and_click_country(driver,country)
+
+        all_servers=scroll_and_collect_all_servers(driver)
+
+        for premium_server in all_servers['elements'] :
+            servers.add(premium_server)
+
+        # Step 2: Wait for it and click
+        #wait_and_click(driver, xpath)
+        #time.sleep(.2)
+
+    print(servers)
+    print(f'Total number of server :{len(servers)} ')
+
+
+
+def collecting_servers_name(driver):
+
+    server_list(driver)
+    time.sleep(3)
+    collect_countries_servers(driver)
+    save_to_csv(countries, servers, "collected_countries_servers.csv")
 
 
 # --- Main Entry ---
 def main():
     driver = setup_driver()
+    #collecting_servers_name(driver)
+    #driver.quit()
     server_check(driver)
-    driver.quit()
+
 
 
 if __name__ == "__main__":
     main()
-
-
-    servers = [ "Denmark - Warrior" , "Turkey - 2" , "Poland Premium" ,  "Canada - 2",
-                "Indonesia" , "Japan" , "Italy - Premium " ,"Netherlands - 1","Brazil",
-                "India - 2","India - 4","India - 3","India - Premium",
-                "USA - 1","USA - 4","USA - Premium","USA - Super",
-               "France - 6","France - 4","France - 5","France - Special","France - Warrior", "France - Premium"
-               "Singapore - 1","Singapore","","Singapore - Premium"
-               "Germany - 6","Germany - Super","Germany - Premium",
-
-               ]

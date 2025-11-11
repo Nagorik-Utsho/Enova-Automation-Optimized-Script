@@ -87,3 +87,22 @@ def save_to_csv(countries, servers, filename="countries_servers.csv"):
             writer.writerow([c, s])
 
     print(f"✅ CSV saved successfully as '{filename}'")
+
+import pandas as pd
+
+def load_countries_and_servers(csv_path):
+    # Read CSV
+    df = pd.read_csv(csv_path)
+
+    # Drop empty cells (NaN) and strip spaces/newlines
+    df['Country'] = df['Country'].fillna('').astype(str).str.strip()
+    df['Server'] = df['Server'].fillna('').astype(str).str.strip()
+
+    # Create sets
+    countries = set(df['Country'][df['Country'] != ''])
+    servers = set(df['Server'][df['Server'] != ''])
+
+    return countries, servers
+
+
+
